@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" type="text/css" href="/static/lib/bootstrap/dist/css/bootstrap.css">
+	<link href="/static/lib/bootstrap-daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css">
+	<link href="/static/lib/rickshaw/rickshaw.css" rel="stylesheet" type="text/css">
+	<link href="/static/lib/backgrid/lib/backgrid.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="/static/css/base.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/app.css">
+</head>
+<body>
+
+
+	{% block body %}{% endblock %}
+
+
+</body>
+
+<script type="text/javascript" src="/static/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="/static/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="/static/lib/underscore/underscore.js"></script>
+<script type="text/javascript" src="/static/lib/backbone/backbone.js"></script>
+<script type="text/javascript" src="/static/lib/moment/moment.js"></script>
+
+<script type="text/javascript">
+	var showLoadingTimer = function(){};
+
+	function showLoading($el, nobg, delay) {
+	    
+	    clearTimeout(showLoadingTimer);
+	    window.showLoadingTimer = setTimeout(function() {
+	        $('#loading_overlay, #loading_dim').remove();
+	        $el = $el || $('body');
+	        var top = $el.offset().top,
+	            left = $el.offset().left,
+	            width = $el.outerWidth(),
+	            height = $el.outerHeight(),
+	            xpos = left+(width/2)-75,
+	            ypos = top + (height/2)-10;
+
+	        var dim = $('<div id="loading_dim"></div>');
+	        dim.css('width', width).css('height', $el[0].scrollHeight).css('background', function(){if (nobg) return ''; else return '#d8d8d8'}).css('opacity', '.3')
+	            .css('position', 'absolute').css('left', left).css('z-index',99998).css('top', top).css('border-radius', $el.css('border-radius'));
+	        
+	        $('body').after(dim);
+	        
+	        loadingEl = $('<div id="loading_overlay"><div class="progress progress-striped active"><div class="progress-bar"  role="progressbar" style="width:100%;background-color:#d8d8d8;z-index:999998"><span style="line-height:19px">Loading...</span></div></div></div>');
+	        loadingEl.css('width', '150px').css('height', '20px').css('text-align', 'center').css('vertical-align', 'middle').css('z-index', 99999)
+	            .css('position', 'absolute').css('left', xpos+'px').css('top', ypos+'px');
+	        $('body').after(loadingEl);
+
+	    }, delay || 1000);
+	}
+
+	function hideLoading() {
+	    clearTimeout(showLoadingTimer);
+	    $('#loading_overlay, #loading_dim').remove();
+	}
+</script>
+
+<script data-main="/static/main" src="/static/lib/requirejs/require.js"></script>
+
+</html>

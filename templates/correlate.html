@@ -1,0 +1,217 @@
+{% extends "correlate_base.html" %}
+
+{% block body %}
+
+<div id="app_bar">
+
+<ol class="breadcrumb">	
+	<li class="active">Correlate</li>
+</ol>
+
+<div id="resource_select">
+	<div id="resource_dropdown" class="dropdown">
+		<div class="dropdown-selected" data-toggle="dropdown">
+			<span class="glyphicon glyphicon-chevron-down pull-right"></span>
+			<span class="name">Add Resources</span>
+			<input class="search sp" type="text" placeholder="Type or search to add">
+		</div>
+		<div class="dropdown-menu" role="menu">
+			<div class="menu-single" id="home_level">
+				<ul class="list-unstyled" id="home_level_list"></ul>
+				<!-- resource level divs get rendered here -->
+			</div>
+		</div>
+	</div>	
+</div>		
+
+<div id="date_select">
+	<div class="dropdown">
+		<div class="dropdown-selected" data-toggle="dropdown">		
+			<span class="glyphicon glyphicon-calendar pull-left"></span>
+			&nbsp;<span class="glyphicon glyphicon-chevron-down pull-right"></span>
+			<span class="name"></span>
+		</div>		
+	</div>
+</div>
+
+<div id="auto_update">
+	<label>
+	<input type="checkbox" checked> Auto-update
+	</label>
+	<span class="glyphicon glyphicon-question-sign list-popover" data-placement="bottom" data-content="Auto-update fetches new data every minute<br>and updates the graph with the new datapoint."></span>
+</div>	
+
+</div>
+
+
+<div id="app_content">
+	<div id="watched_resources">
+		<button class="btn btn-link btn-xs" id="hide_sidebar">hide sidebar</button>
+		<button class="btn btn-link btn-xs pull-right" id="collapse_all">collapse</button>
+		<button class="btn btn-link btn-xs pull-right" id="expand_all">expand</button>
+		<div id="add_resource_instructions">
+			<h1>No resources selected</h1>
+		</div>
+		<ul id="watched_resources_list"></ul>
+	</div>
+
+	<div id="show_sidebar" class="theme-background" title="show sidebar">
+		<span class="glyphicon glyphicon-chevron-right"></span>
+	</div>
+
+	<div id="content_container">
+		<div id="graph_container">
+			<div id="graph_instructions"></div>
+			<div id="graph">
+			</div>
+			<div id="preview"></div>
+		</div>
+		<div id="table_container">
+			<div role="tabpanel">
+				<!-- Detail tabs -->
+				<ul class="nav nav-tabs" role="tablist" id="detail_tabs">
+					<li role="presentation" class="hidden"><a class="" href="#detail_tab_processes" role="tab" data-toggle="tab">Processes</a></li>
+					<li role="presentation" class="hidden"><a class="strf" href="#detail_tab_sockets" role="tab" data-toggle="tab">Sockets</a></li>
+					<li role="presentation" class="hidden"><a class="strf" href="#detail_tab_threads" role="tab" data-toggle="tab">Threads</a></li>
+					<li role="presentation" class="hidden"><a class="strf" href="#detail_tab_files" role="tab" data-toggle="tab">Files</a></li>
+					<li role="presentation" class="hidden"><a class="strf" href="#detail_tab_registries" role="tab" data-toggle="tab">Registries</a></li>
+					<li role="presentation" class="hidden"><a class="" href="#detail_tab_logs" role="tab" data-toggle="tab">Logs</a></li>
+					<li role="presentation" class="hidden"><a class="" href="#detail_tab_polled_data" role="tab" data-toggle="tab">Polled Data</a></li>
+					<li role="presentation" class="hidden"><a class="" href="#detail_tab_alerts" role="tab" data-toggle="tab">Alerts</a></li>
+				</ul>
+				<!-- Tab panes -->
+				<div class="tab-content">
+					<div class="no-table-data text-center">
+						Once resources are selected, click the graph. Detailed data for the clicked point in time will appear here.
+					</div>
+					<!-- Tab content divs get rendered here -->
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+<script type="text/template" id="graph_instructions_template">
+		<h1>Select some resources to make this graph beautiful!</h1>
+		<h2><span id="click_here" class="theme-color">Click here</span> or use the dropdown above to add resources.</h2>
+</script>
+
+<script type="text/template" id="home_level_resource_template">
+	<div class="resource-type-heading hover-theme-background">
+		<span class="resource-name"><%= title %></span>
+		<span class="glyphicon glyphicon-chevron-right pull-right"></span>
+		<span class="badge pull-right"></span>
+	</div>
+	<ul class="results-preview"></ul>
+	<em><div class="more hover-theme-background"></div></em>
+</script>
+
+<script type="text/template" id="resource_level_template">
+	<div class="level-title">
+		<span class="glyphicon glyphicon-chevron-left sp back hover-theme-color"></span>
+		<h2 class="title"><%= title %></h2>
+	</div>
+	<ul></ul>
+	<div class="status hidden">loading more...</div>
+</script>
+
+<script type="text/template" id="resource_type_template">
+	<h1 class="resource-name"><%= name%></h1>
+	<ul class="list-inline resource-list"></ul>
+</script>
+
+<script type="text/template" id="resource_item_template">
+	<div class="title" title="<%= name %>"><%= name %></span>
+	<div class="details"><%= info %></div>
+</script>	
+
+<script type="text/template" id="watched_resource_template">
+	<div class="watched-resource-header theme-background">
+	<button class="btn btn-sm btn-link pull-right remove"><span class="glyphicon glyphicon-remove"></span></button>
+	<h2 class="resource-name" title="<%= type %>: <%= name%> <% typeof(args) !== 'undefined' && print(args) %>"><%= name%></h2>
+	<label class="extra-info"><%= info %></label>
+	</div>
+	<div class="status hidden">getting metrics...</div>
+	<div class="watched-resource-metrics-container"></div>
+</script>	
+
+<script type="text/template" id="watched_resource_metric_template">
+	<label class="metric-name">
+		<input type="checkbox" <% if (selected) print ('checked')%> >
+		<span></span>
+		<%= name %>
+		<span class="pull-right value"></span>
+	</label>
+</script>
+
+<script type="text/template" id="detail_tab_panel_template">
+
+	<div class="input-group input-group-sm filter">
+		<span class="input-group-addon">
+			<span class="glyphicon glyphicon-search"></span>
+		</span>
+		<input type="search" class="form-control filter-input">
+	</div>
+
+	<select class="hidden form-control"></select>	
+
+	<div class="page-controls pull-right">
+		<button class="btn btn-sm btn-link prev-page" style="padding-right:2px;padding-left:2px;margin-left:5px"><i class="glyphicon glyphicon-chevron-left"></i></button>
+		<button class="btn btn-sm btn-link next-page" style="padding-right:2px;padding-left:2px"><i class="glyphicon glyphicon-chevron-right"></i></button>
+
+		<span class="loading"><img src="/static/img/loading.gif" width="20"></span>
+		<span class="error">Error loading data&nbsp;</span>
+		<span class="time"></span>		
+	</div>
+
+
+	
+	<div class="table-container"></div>
+	<div class="page-controls pull-right">
+		<button class="btn btn-sm btn-link prev-page" style="padding-right:2px;padding-left:2px;margin-left:5px"><i class="glyphicon glyphicon-chevron-left"></i></button>
+		<button class="btn btn-sm btn-link next-page" style="padding-right:2px;padding-left:2px"><i class="glyphicon glyphicon-chevron-right"></i></button>
+
+		<span class="loading"><img src="/static/img/loading.gif" width="20"></span>
+		<span class="error">Error loading data&nbsp;</span>
+		<span class="time"></span>		
+	</div><br/>	
+</script>
+
+
+
+<div class="container">
+	<div class="resource-menu-container"></div>
+</div>
+
+<!-- Templates -->
+
+<script type="text/template" id="resource_page_template">
+
+<div class="resource-menu-page-top-controls">
+	<span 
+		class="control-button back-button glyphicon glyphicon-chevron-left
+		<% if (!back_button) print ('hidden')%>"></span>
+	<span
+		class="control-button close-button glyphicon glyphicon-remove
+		<% if (!close_button) print ('hidden')%>"></span>
+</div>
+<h1 class="resource-menu-page-title"><%= page_title %></h1>
+<div class="resource-menu-page-search-container <% if (!search) print ('hidden')%>">
+	<input type="search" placeholder="<%= placeholder %>">
+</div>
+<div class="resource-menu-page-items-container">
+	<ul></ul>
+</div>
+
+</script>
+
+
+<script type="text/template" id="resource_item_template">
+
+<label><%= label %></label>
+<span class="right-arrow glyphicon glyphicon-chevron-right"></span>
+<span class="count-badge">160</span>
+
+</script>
+
+{% endblock %}

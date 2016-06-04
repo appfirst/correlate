@@ -1,0 +1,32 @@
+{
+  "name": "af_correlate",
+  "description": "A graphing application for AppFirst data",
+  "dependencies": {
+    "backbone" : null,
+    "backbone.paginator" : null,
+    "backgrid" : null,
+    "backgrid-paginator" : null,
+    "backgrid-filter" : null,
+    "bootstrap" : null,
+    "bootstrap-daterangepicker" : "~1.3.17",
+    "d3" : null,
+    "jquery" : null,
+    "moment" : null,
+    "r.js" : null,
+    "requirejs" : null,
+    "rickshaw" : null,
+    "underscore" : null
+  },
+  "authors": [
+    "Kyle Rosenberg <kyle@appfirst.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "private": true
+}
